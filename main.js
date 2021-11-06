@@ -5,7 +5,7 @@ var config = {
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: {y: 500},
+            gravity: {y: 420},
             debug: false
         }
     },
@@ -58,12 +58,11 @@ function create() {
     this.physics.world.bounds.height = groundLayer.height;
 
     // create the player sprite    
-    player = this.physics.add.sprite(200, 200, 'player');
-    player.setBounce(0.2); // our player will bounce from items
-    player.setCollideWorldBounds(true); // don't go out of the map    
+    player = this.physics.add.sprite(100, 100, 'player');
+    player.setCollideWorldBounds(false); // don't go out of the map    
     
     // small fix to our player images, we resize the physics body object slightly
-    player.body.setSize(player.width, player.height-8);
+    player.body.setSize(player.width-10, player.height-10);
     
     // player will collide with the level tiles 
     this.physics.add.collider(groundLayer, player);
@@ -76,9 +75,8 @@ function create() {
     // player walk animation
     this.anims.create({
         key: 'walk',
-        frames: this.anims.generateFrameNames('player', {prefix: 'p1_walk', start: 1, end: 11, zeroPad: 2}),
+        frames: [{key: 'player', frame: 'p1_stand'}],
         frameRate: 10,
-        repeat: -1
     });
     // idle with only one frame, so repeat is not neaded
     this.anims.create({
@@ -96,7 +94,7 @@ function create() {
     this.cameras.main.startFollow(player);
 
     // set background color, so the sky is not black    
-    this.cameras.main.setBackgroundColor('#ccccff');
+    this.cameras.main.setBackgroundColor('#FFFFFF');
 
     // this text will show the score
     text = this.add.text(20, 570, '0', {
@@ -118,13 +116,13 @@ function collectCoin(sprite, tile) {
 function update(time, delta) {
     if (cursors.left.isDown)
     {
-        player.body.setVelocityX(-200);
+        player.body.setVelocityX(-500);
         player.anims.play('walk', true); // walk left
         player.flipX = true; // flip the sprite to the left
     }
     else if (cursors.right.isDown)
     {
-        player.body.setVelocityX(200);
+        player.body.setVelocityX(500);
         player.anims.play('walk', true);
         player.flipX = false; // use the original sprite looking to the right
     } else {
@@ -135,5 +133,9 @@ function update(time, delta) {
     if (cursors.up.isDown && player.body.onFloor())
     {
         player.body.setVelocityY(-500);        
+    }
+    else if (cursors.down.isDown && !(player.body.onFloor()))
+    {
+        player.body.setVelocityY(500);
     }
 }
